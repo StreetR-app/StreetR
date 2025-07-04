@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>StreetR</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div id="loading-modal" class="modal-overlay hidden">
+            <div class="loader-container">
+                <div class="spinning-circle"></div>
+                <div class="loader-text">
+                    <span class="text-orange">Street</span><span class="text-white">R</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="notification-popup-1" class="popup-notification hidden">
+            <button class="close-popup-btn">x</button>
+            <img src="assets/promo-1.png" alt="Promo 1">
+        </div>
+
+        <div id="notification-popup-2" class="popup-notification hidden">
+            <button class="close-popup-btn">x</button>
+            <img src="assets/promo-2.png" alt="Promo 2">
+        </div>
+
+        <div id="notification-popup-3" class="popup-notification hidden">
+            <button class="close-popup-btn">x</button>
+            <img src="assets/promo-3.png" alt="Promo 3">
+            <div class="popup-footer">
+                <input type="checkbox" id="dont-show-again">
+                <label for="dont-show-again">Don't show this again</label>
+            </div>
+        </div>
+
+        <div id="more-menu-popup" class="more-menu-popup hidden">
+            <div class="more-menu-overlay"></div>
+            <div class="more-menu-content">
+                <h3>More Options</h3>
+                <a href="https://www.example.com/moms" target="_blank" class="more-menu-item">Mom's</a>
+                <a href="https://www.example.com/puja" target="_blank" class="more-menu-item">Pujja</a>
+                <a href="https://www.example.com/groceries" target="_blank" class="more-menu-item">Groceries</a>
+                <button id="close-more-menu-btn" class="button-outline">Close</button>
+            </div>
+        </div>
+
+        <div id="confetti-container"></div>
+
+        <header id="app-header" class="app-header" style="display: none;">
+            <div class="header-left">
+                <h1 class="header-title">StreetR</h1>
+            </div>
+            <div class="header-right">
+                <button id="likes-page-button" class="icon-button"><i class="fa-solid fa-heart"></i></button>
+                <button id="search-page-button" class="icon-button"><i class="fa-solid fa-search"></i></button>
+            </div>
+        </header>
+
+        <main id="page-container">
+            <div id="login-page" class="page active">
+                <div class="page-content centered-content">
+                    <img src="https://uploads.onecompiler.io/42q5e2pr5/43m4t5ddk/1000130216.png" alt="App Logo" class="app-icon-large">
+                    <h2>Welcome to StreetR!</h2>
+                    <p>Your Favorite Foods, Snacks & Juices Delivered with a Smile!</p>
+                    <input type="email" id="login-email" placeholder="Enter your email" autocomplete="email">
+                    <div class="terms-container">
+                        <input type="checkbox" id="terms-conditions">
+                        <label for="terms-conditions">I agree to the <a href="#" target=" blank">Terms & Conditions</a></label>
+                    </div>
+                    <button id="login-button">Get Magic Link</button>
+                    <p id="login-message" class="message"></p>
+                </div>
+            </div>
+
+            <div id="profile-setup-page" class="page">
+                <div class="page-header">Personal Details</div>
+                <div class="page-content">
+                    <form id="profile-form">
+                        <label for="customer-name">Full Name:</label>
+                        <input type="text" id="customer-name" required>
+                        <label for="mobile-number">Mobile Number:</label>
+                        <input type="tel" id="mobile-number" required pattern="[0-9]{10}">
+                        <label for="street-name">Street Name / House No:</label>
+                        <input type="text" id="street-name" required>
+                        <label for="nearby-landmark">Nearby Landmark:</label>
+                        <input type="text" id="nearby-landmark" required>
+                        <label for="district">District:</label>
+                        <input type="text" id="district" required>
+                        <label for="state">State:</label>
+                        <input type="text" id="state" required>
+                        <label for="pincode">Pincode:</label>
+                        <input type="text" id="pincode" required pattern="[0-9]{6}">
+                        <button type="submit" id="save-profile-button">Save Details</button>
+                    </form>
+                    <p id="profile-message" class="message"></p>
+                </div>
+            </div>
+
+            <div id="main-app-view" class="page">
+                <div id="home-page-content" class="tab-content active">
+                    <h3 class="popular-heading">Popular Items</h3>
+                    <div id="popular-items-container" class="item-grid"></div>
+                    <h3>All Available Items</h3>
+                    <div id="all-items-container" class="item-grid"></div>
+                </div>
+                <div id="orders-page-content" class="tab-content">
+                    <h3>Your Orders</h3>
+                    <div id="orders-list"></div>
+                </div>
+                <div id="cart-page-content" class="tab-content">
+                    <h3>Your Cart</h3>
+                    <div id="cart-items-container"></div>
+                    <div id="cart-empty-view" class="empty-state hidden">
+                        <img src="https://uploads.onecompiler.io/42q5e2pr5/43nvveyp4/1000133809.png" alt="Empty Cart Illustration">
+                        <p>Your cart is empty. Let's fill it up!</p>
+                    </div>
+                    <div id="cart-summary" class="hidden">
+                        <h4>Bill Details</h4>
+                        <div class="bill-row"><span>Subtotal</span><span id="cart-subtotal"></span></div>
+                        <div class="bill-row"><span>GST (10%)</span><span id="cart-gst"></span></div>
+                        <div class="bill-row"><span>Delivery Fee</span><span id="cart-delivery-fee"></span></div>
+                        <div class="promo-code-container">
+                            <input type="text" id="promo-code" placeholder="Enter promo code">
+                            <button id="apply-promo-button">Apply</button>
+                        </div>
+                        <div class="bill-row grand-total"><span>Grand Total</span><span id="cart-grand-total"></span></div>
+                        <button id="place-order-button">Place Order</button>
+                    </div>
+                </div>
+                <div id="map-page-content" class="tab-content">
+                    <div id="map-container"></div>
+                </div>
+                <div id="profile-page-content" class="tab-content">
+    <h3>Your Profile</h3>
+
+    <div id="profile-details-view">
+        <div class="profile-field">
+            <label>Full Name:</label>
+            <p id="profile-display-name"></p>
+        </div>
+        <div class="profile-field">
+            <label>Mobile Number:</label>
+            <p id="profile-display-mobile"></p>
+        </div>
+        <div class="profile-field">
+            <label>Street Name / House No:</label>
+            <p id="profile-display-street"></p>
+        </div>
+        <div class="profile-field">
+            <label>Nearby Landmark:</label>
+            <p id="profile-display-landmark"></p>
+        </div>
+        <div class="profile-field">
+            <label>District:</label>
+            <p id="profile-display-district"></p>
+        </div>
+        <div class="profile-field">
+            <label>State:</label>
+            <p id="profile-display-state"></p>
+        </div>
+        <div class="profile-field">
+            <label>Pincode:</label>
+            <p id="profile-display-pincode"></p>
+        </div>
+    </div>
+
+    <form id="profile-edit-form" class="hidden">
+        <label for="edit-customer-name">Full Name:</label>
+        <input type="text" id="edit-customer-name" required>
+
+        <label for="edit-mobile-number">Mobile Number:</label>
+        <input type="tel" id="edit-mobile-number" required pattern="[0-9]{10}">
+
+        <label for="edit-street-name">Street Name / House No:</label>
+        <input type="text" id="edit-street-name" required>
+
+        <label for="edit-nearby-landmark">Nearby Landmark:</label>
+        <input type="text" id="edit-nearby-landmark" required>
+
+        <label for="edit-district">District:</label>
+        <input type="text" id="edit-district" required>
+
+        <label for="edit-state">State:</label>
+        <input type="text" id="edit-state" required>
+
+        <label for="edit-pincode">Pincode:</label>
+        <input type="text" id="edit-pincode" required pattern="[0-9]{6}">
+
+        <button type="button" id="save-profile-changes-button">Save Changes</button>
+    </form>
+
+    <div class="profile-actions">
+        <button id="profile-toggle-edit-button" class="button-outline">Edit Profile</button>
+        <button id="help-button" class="button-outline">Help</button>
+        <button id="logout-button" class="button-danger">Logout</button>
+    </div>
+</div>
+
+            </div>
+
+            <div id="search-page" class="page">
+                <div class="page-header-with-back">
+                    <button class="back-to-home-btn icon-button"><i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+                <div class="search-header">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search for food or shops...">
+                    <button id="clear-search-btn" class="hidden"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <div class="search-suggestions">
+                    <button class="suggestion-tag">Pizza</button>
+                    <button class="suggestion-tag">Biriyani</button>
+                    <button class="suggestion-tag">Ice Cream</button>
+                    <button class="suggestion-tag">Street Food</button>
+                    <button class="suggestion-tag">Bakery</button>
+                </div>
+                <div class="search-tabs">
+                    <button class="search-tab active" data-tab="food">Food Items</button>
+                    <button class="search-tab" data-tab="shops">Shops</button>
+                </div>
+                <div id="search-results-container">
+                    <div id="search-results-food" class="search-results-content active"></div>
+                    <div id="search-results-shops" class="search-results-content"></div>
+                </div>
+                <div id="search-empty-state" class="empty-state hidden">
+                    <img src="https://uploads.onecompiler.io/42q5e2pr5/43nvveyp4/1000133143.png" alt="No results found">
+                    <p>No results found for '<span id="search-query-display"></span>'. Try another keyword.</p>
+                </div>
+                <button id="qr-scanner-button" class="qr-scanner-fab"><i class="fa-solid fa-qrcode"></i></button>
+            </div>
+
+            <div id="qr-scanner-page" class="page">
+                <div class="page-header-with-back">
+                    <button class="back-to-home-btn icon-button"><i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+                <div class="page-header">Scan Seller QR Code</div>
+                <div id="qr-reader"></div>
+                <button id="close-scanner-button">Close Scanner</button>
+            </div>
+
+            <div id="likes-page" class="page">
+                <div class="page-header-with-back">
+                    <button class="back-to-home-btn icon-button"><i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+                <div class="page-header">Your Liked Items</div>
+                <div id="liked-items-container" class="item-grid"></div>
+                <div id="likes-empty-state" class="empty-state hidden">
+                    <img src="https://uploads.onecompiler.io/42q5e2pr5/43nvveyp4/1000133808.png" alt="No liked items">
+                    <p>You haven't liked any items yet.</p>
+                </div>
+            </div>
+
+            <div id="item-detail-page" class="page"></div>
+            <div id="shop-profile-page" class="page"></div>
+
+            <div id="payment-page" class="page">
+                <div class="page-header-with-back">
+                    <button class="back-to-home-btn icon-button"><i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+                <div class="page-header">Complete Your Payment</div>
+                <div class="page-content centered-content">
+                    <p>Scan the QR code to pay or use Razorpay.</p>
+                    <div id="payment-qr-code">
+                        <img src="assets/sample-qr.png" alt="Scan to Pay">
+                    </div>
+                    <button id="razorpay-button" class="button-green">
+                        <i class="fa-solid fa-shield-halved"></i> Pay with Razorpay
+                    </button>
+                    <button id="back-to-cart-button" class="button-outline">Back to Cart</button>
+                </div>
+            </div>
+
+        </main>
+
+        <footer id="page-footer" style="display: none;">
+            <div id="cart-footer" class="hidden">
+                
+            </div>
+        </footer>
+
+        <nav id="bottom-nav" class="bottom-nav" style="display: none;">
+            <button data-page="home-page-content" class="nav-item active">
+                <i class="fa-solid fa-house"></i><span>Home</span>
+            </button>
+            <button data-page="orders-page-content" class="nav-item">
+                <i class="fa-solid fa-receipt"></i><span>Orders</span>
+            </button>
+            <button data-page="map-page-content" class="nav-item">
+                <i class="fa-solid fa-map-location-dot"></i><span>Map</span>
+            </button>
+            <button data-page="cart-page-content" class="nav-item">
+                <i class="fa-solid fa-cart-shopping"></i><span>Cart</span>
+            </button>
+            <button data-page="profile-page-content" class="nav-item">
+                <i class="fa-solid fa-user"></i><span>Profile</span>
+            </button>
+            <button id="more-nav-button" class="nav-item">
+                <i class="fa fa-bars"></i><span>More</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="js_supabase.js"></script>
+    <script src="js_auth.js"></script>
+    <script src="js_main.js"></script>
+    <script src="js_profiles.js"></script>
+    <script src="js_home.js"></script>
+    <script src="js_search_filter.js"></script>
+    <script src="js_qr_scanner.js"></script>
+    <script src="js_add_to_cart.js"></script>
+    <script src="js_payment.js"></script>
+    <script src="js_order.js"></script>
+    <script src="js_likes.js"></script>
+    <script src="js_shop.js"></script>
+    <script src="js_map.js"></script>
+    <script src="js_notification.js"></script>
+</body>
+
+        </html>
