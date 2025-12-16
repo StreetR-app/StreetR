@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta name="google-site-verification" content="mWptKmwpqodclWzUNQN_7Dlupkk2l0Jp2uAwiMGZFSI" />
+
+
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 </head>
 
 <body>
@@ -66,7 +70,7 @@
         <main id="page-container">
             <div id="login-page" class="page active">
                 <div class="page-content centered-content">
-                    <img src="assets/applogo.png" alt="App Logo" class="app-icon-large">
+                    <img src="https://uploads.onecompiler.io/42q5e2pr5/43m4t5ddk/1000130216.png" alt="App Logo" class="app-icon-large">
                     <h2>Welcome to StreetR!</h2>
                     <p>Your Favorite Foods, Snacks & Juices Delivered with a Smile!</p>
                     <input type="email" id="login-email" placeholder="Enter your email" autocomplete="email">
@@ -107,7 +111,8 @@
                 <div id="home-page-content" class="tab-content active">
                     <h3 class="popular-heading">Popular Items</h3>
                     <div id="popular-items-container" class="item-grid"></div>
-                    <h3>All Available Items</h3>
+                    <h3 class="main-item-heading">All Available Items</h3>
+
                     <div id="all-items-container" class="item-grid"></div>
                 </div>
                 <div id="orders-page-content" class="tab-content">
@@ -118,7 +123,7 @@
                     <h3>Your Cart</h3>
                     <div id="cart-items-container"></div>
                     <div id="cart-empty-view" class="empty-state hidden">
-                        <img src="assets/empty.png" alt="Empty Cart Illustration">
+                        <img src="https://uploads.onecompiler.io/42q5e2pr5/43nvveyp4/1000133809.png" alt="Empty Cart Illustration">
                         <p>Your cart is empty. Let's fill it up!</p>
                     </div>
                     <div id="cart-summary" class="hidden">
@@ -230,7 +235,7 @@
                     <div id="search-results-shops" class="search-results-content"></div>
                 </div>
                 <div id="search-empty-state" class="empty-state hidden">
-                    <img src="assets/results.png" alt="No results found">
+                    <img src="https://uploads.onecompiler.io/42q5e2pr5/43nvveyp4/1000133143.png" alt="No results found">
                     <p>No results found for '<span id="search-query-display"></span>'. Try another keyword.</p>
                 </div>
                 <button id="qr-scanner-button" class="qr-scanner-fab"><i class="fa-solid fa-qrcode"></i></button>
@@ -265,15 +270,23 @@
                     <button class="back-to-home-btn icon-button"><i class="fa-solid fa-arrow-left"></i></button>
                 </div>
                 <div class="page-header">Complete Your Payment</div>
-                <div class="page-content centered-content">
-                    <p>Scan the QR code to pay or use Razorpay.</p>
-                    <div id="payment-qr-code">
-                        <img src="assets/sample-qr.png" alt="Scan to Pay">
+                <div class="page-content">
+                    <div id="payment-summary" class="payment-summary hidden">
+                        <h4>Order Summary</h4>
+                        <div class="bill-row"><span>Subtotal</span><span id="payment-subtotal"></span></div>
+                        <div class="bill-row"><span>GST (10%)</span><span id="payment-gst"></span></div>
+                        <div class="bill-row"><span>Delivery Fee</span><span id="payment-delivery-fee"></span></div>
+                        <div class="bill-row"><span>Platform Fee</span><span id="payment-platform-fee"></span></div>
+                        <div class="bill-row grand-total"><span>Grand Total</span><span id="payment-grand-total"></span></div>
                     </div>
-                    <button id="razorpay-button" class="button-green">
-                        <i class="fa-solid fa-shield-halved"></i> Pay with Razorpay
-                    </button>
-                    <button id="back-to-cart-button" class="button-outline">Back to Cart</button>
+                    <div id="payment-container" class="payment-container">
+                        <p class="payment-loading-text">Loading payment gateway...</p>
+                    </div>
+                    <div id="payment-error" class="payment-error hidden">
+                        <p class="error-message"></p>
+                        <button id="retry-payment-button" class="button-outline">Retry Payment</button>
+                    </div>
+                    <button id="back-to-cart-button" class="button-outline" style="margin-top: 20px;">Back to Cart</button>
                 </div>
             </div>
 
